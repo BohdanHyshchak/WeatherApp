@@ -41,10 +41,8 @@ class WeatherFragment : Fragment() {
 
     private fun testImage() {
         lifecycleScope.launchWhenCreated {
-             // Glide.with(this@WeatherFragment).load("http://openweathermap.org/img/w/01d.png").into(binding.ivTestImage)
-            // binding.tvTestTextView.text = "HELLO"
             val response = try {
-                RetrofitInstance.api.getWeatherForecast("London")
+                RetrofitInstance.api.getWeatherForecast("Kryvyi Rih")
             } catch (e: IOException) {
                 Log.e(TAG, "IOException")
                 return@launchWhenCreated
@@ -53,8 +51,8 @@ class WeatherFragment : Fragment() {
                 return@launchWhenCreated
             }
             if (response.isSuccessful && response.body() != null) {
-                binding.tvTestTextView.text = "HELLO"
-                // Glide.with(this@WeatherFragment).load("http://openweathermap.org/img/w/${response.body()!!.weather[0].icon}.png").into(binding.ivTestImage)
+                binding.tvTestTextView.text = response.body()!!.name
+                Glide.with(this@WeatherFragment).load("http://openweathermap.org/img/w/${response.body()!!.weather[0].icon}.png").into(binding.ivTestImage)
             } else {
                 Log.e(TAG, "Response was not successful")
             }
