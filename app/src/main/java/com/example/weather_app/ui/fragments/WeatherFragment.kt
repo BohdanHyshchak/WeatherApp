@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
 import com.example.weather_app.R
 import com.example.weather_app.api.RetrofitInstance
 import com.example.weather_app.databinding.WeatherFragmentBinding
