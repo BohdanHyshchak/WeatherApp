@@ -7,4 +7,6 @@ data class Main(
     val temp: Double,
     val temp_max: Double,
     val temp_min: Double
-)
+) {
+    constructor(): this(0.0, 0, 0, 0.0, 0.0, 0.0)
+}

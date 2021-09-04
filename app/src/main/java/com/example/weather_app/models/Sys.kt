@@ -6,4 +6,6 @@ data class Sys(
     val sunrise: Int,
     val sunset: Int,
     val type: Int
-)
+) {
+    constructor(): this("", 0, 0, 0,0)
+}
