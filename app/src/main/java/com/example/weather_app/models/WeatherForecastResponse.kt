@@ -9,25 +9,39 @@ const val WEATHER_FORECAST_ID = 0
     tableName = "weather_forecast"
 )
 data class WeatherForecastResponse(
-    val base: String,
+    var base: String,
     @Embedded(prefix = "clouds_")
-    val clouds: Clouds,
-    val cod: Int,
+    var clouds: Clouds,
+    var cod: Int,
     @Embedded(prefix = "coord_")
-    val coord: Coord,
-    val dt: Int,
+    var coord: Coord,
+    var dt: Int,
     @Embedded(prefix = "main_")
-    val main: Main,
-    val name: String,
+    var main: Main,
+    var name: String,
     @Embedded(prefix = "sys_")
-    val sys: Sys,
-    val timezone: Int,
-    val visibility: Int,
+    var sys: Sys,
+    var timezone: Int,
+    var visibility: Int,
     @Embedded(prefix = "weather_")
-    val weather: List<Weather>,
+    var weather: List<Weather>,
     @Embedded(prefix = "wind_")
-    val wind: Wind
+    var wind: Wind
 ) {
+    constructor() : this(
+        "",
+        Clouds(0),
+        0,
+        Coord(0.0, 0.0),
+        0,
+        Main(0.0, 0, 0, 0.0, 0.0, 0.0),
+        "",
+        Sys("", 0, 0, 0, 0),
+        0,
+        0,
+        listOf(Weather("", "", 0, "")),
+        Wind(0, 0.0, 0.0)
+    )
     @PrimaryKey(autoGenerate = false)
     var id: Int = WEATHER_FORECAST_ID
 }
