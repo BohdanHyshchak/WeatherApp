@@ -1,10 +1,10 @@
 package com.example.weather_app.models
 
 data class Weather(
-    val description: String,
-    val icon: String,
-    val id: Int,
-    val main: String
+    var description: String,
+    var icon: String,
+    var id: Int,
+    var main: String
 ) {
     constructor(): this("", "", 0, "")
 }
