@@ -14,6 +14,6 @@ interface WeatherForecastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(weatherForecast: WeatherForecastResponse)
 
-    @Query("select * from weather_forecast where id = $WEATHER_FORECAST_ID")
-    suspend fun getWeatherForecast(): LiveData<WeatherForecastResponse>
+    @Query("select * from weather_forecast where idOfResponse = $WEATHER_FORECAST_ID")
+    fun getWeatherForecast(): LiveData<WeatherForecastResponse>
 }

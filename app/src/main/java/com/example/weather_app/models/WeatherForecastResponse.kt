@@ -1,8 +1,6 @@
 package com.example.weather_app.models
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 const val WEATHER_FORECAST_ID = 0
 @Entity(
@@ -16,6 +14,7 @@ data class WeatherForecastResponse(
     @Embedded(prefix = "coord_")
     var coord: Coord,
     var dt: Int,
+    var id: Int,
     @Embedded(prefix = "main_")
     var main: Main,
     var name: String,
@@ -23,7 +22,7 @@ data class WeatherForecastResponse(
     var sys: Sys,
     var timezone: Int,
     var visibility: Int,
-    @Embedded(prefix = "weather_")
+    @TypeConverters
     var weather: List<Weather>,
     @Embedded(prefix = "wind_")
     var wind: Wind
@@ -34,6 +33,7 @@ data class WeatherForecastResponse(
         0,
         Coord(0.0, 0.0),
         0,
+        0,
         Main(0.0, 0, 0, 0.0, 0.0, 0.0),
         "",
         Sys("", 0, 0, 0, 0),
@@ -43,5 +43,5 @@ data class WeatherForecastResponse(
         Wind(0, 0.0, 0.0)
     )
     @PrimaryKey(autoGenerate = false)
-    var id: Int = WEATHER_FORECAST_ID
+    var idOfResponse: Int = WEATHER_FORECAST_ID
 }
