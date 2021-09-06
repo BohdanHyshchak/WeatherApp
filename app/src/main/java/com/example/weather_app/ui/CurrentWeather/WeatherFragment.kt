@@ -1,4 +1,4 @@
-package com.example.weather_app.ui.fragments
+package com.example.weather_app.ui.CurrentWeather
 
 import android.os.Bundle
 import android.util.Log
@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.weather_app.R
 import com.example.weather_app.api.RetrofitInstance
+import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.databinding.WeatherFragmentBinding
+import com.example.weather_app.db.WeatherForecastDatabase
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -19,6 +22,8 @@ class WeatherFragment : Fragment() {
 
     val TAG = "Weather Fragment"
     lateinit var binding: WeatherFragmentBinding
+    lateinit var viewModel: WeatherViewModel
+    lateinit var viewModelFactory: WeatherViewModelProviderFactory
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,7 +39,9 @@ class WeatherFragment : Fragment() {
             false
         )
 
-        testImage()
+        val weatherForecastRepository = WeatherForecastRepository(WeatherForecastDatabase(this@WeatherFragment))
+        viewModelFactory = WeatherViewModelProviderFactory(weatherForecastRepository)
+        viewModel = ViewModelProvider(this,viewModelFactory).get(WeatherViewModel::class.java)
 
         return binding.root
     }

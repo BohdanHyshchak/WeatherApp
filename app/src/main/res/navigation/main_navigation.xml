@@ -5,6 +5,6 @@
 
     <fragment
         android:id="@+id/weatherFragment"
-        android:name="com.example.weather_app.ui.fragments.WeatherFragment"
+        android:name="com.example.weather_app.ui.CurrentWeather.WeatherFragment"
         android:label="WeatherFragment" />
 </navigation>
