@@ -13,7 +13,7 @@ class WeatherViewModel(
     private val weatherForecastRepository: WeatherForecastRepository
 ) : ViewModel() {
 
-    private val weatherForecast: MutableLiveData<Resource<WeatherForecastResponse>> = MutableLiveData()
+    val weatherForecast: MutableLiveData<Resource<WeatherForecastResponse>> = MutableLiveData()
 
     init {
         getWeatherForecast("Kyiv")
