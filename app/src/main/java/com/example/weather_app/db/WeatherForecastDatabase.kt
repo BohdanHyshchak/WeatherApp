@@ -24,13 +24,13 @@ abstract class WeatherForecastDatabase : RoomDatabase() {
         private var instance: WeatherForecastDatabase? = null
         private val LOCK = Any()
 
-        operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
+        operator fun invoke(context: WeatherFragment) = instance ?: synchronized(LOCK) {
             instance ?: createDatabase(context).also { instance = it }
         }
 
-        private fun createDatabase(context: Context) =
+        private fun createDatabase(context: WeatherFragment) =
             Room.databaseBuilder(
-                context.applicationContext,
+                context.requireContext(),
                 WeatherForecastDatabase::class.java,
                 "weather_forecast_db.db"
             ).build()

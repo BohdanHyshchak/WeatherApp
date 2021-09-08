@@ -1,5 +1,6 @@
 package com.example.weather_app.ui.CurrentWeather
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +16,6 @@ import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.databinding.WeatherFragmentBinding
 import com.example.weather_app.db.WeatherForecastDatabase
 import com.example.weather_app.models.WeatherForecastResponse
-import com.example.weather_app.ui.MainActivity
 import com.example.weather_app.utils.Resource
 
 class WeatherFragment : Fragment() {
@@ -53,7 +53,7 @@ class WeatherFragment : Fragment() {
                     is Resource.Success -> {
                         // hideProgressBar()
                         response.data?.let {
-                            //bindViews(it, binding)
+                            bindViews(it, binding, context)
                         }
                     }
                     is Resource.Loading -> {
@@ -71,10 +71,10 @@ class WeatherFragment : Fragment() {
     }
 }
 
-private fun bindViews(response: WeatherForecastResponse, binding: WeatherFragmentBinding) {
+private fun bindViews(response: WeatherForecastResponse, binding: WeatherFragmentBinding, context: Context?) {
     binding.tvNameOfCity.text = response.name
     binding.tvCountryCode.text = response.sys.country
-    //Glide.with(WeatherFragment()).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivTestImage)
+    Glide.with(context!!).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivTestImage)
 }
 
 // lifecycleScope.launchWhenCreated {
