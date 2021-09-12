@@ -15,5 +15,5 @@ interface WeatherForecastDao {
     suspend fun upsert(weatherForecast: WeatherForecastResponse)
 
     @Query("select * from weather_forecast where idOfResponse = $WEATHER_FORECAST_ID")
-    fun getWeatherForecast(): LiveData<WeatherForecastResponse>
+    suspend fun getWeatherForecast(): WeatherForecastResponse
 }

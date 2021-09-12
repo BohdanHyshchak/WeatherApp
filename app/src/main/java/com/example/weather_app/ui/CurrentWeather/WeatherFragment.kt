@@ -38,12 +38,22 @@ class WeatherFragment : Fragment() {
             false
         )
         val weatherForecastRepository = WeatherForecastRepository(WeatherForecastDatabase(this))
-        val viewModelFactory = WeatherViewModelProviderFactory(weatherForecastRepository)
+        val viewModelFactory = WeatherViewModelProviderFactory(weatherForecastRepository, this.requireActivity().application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
         setUI()
-
+        //testCheckForConnection()
         return binding.root
     }
+
+//    private fun testCheckForConnection() {
+//        viewModel.internetConnection.observeForever {
+//            if (it) {
+//                binding.tvStateOfSky.text = "Available"
+//            } else {
+//                binding.tvStateOfSky.text = "Unavailable"
+//            }
+//        }
+//    }
 
     private fun setUI() {
         viewModel.weatherForecast.observe(
@@ -51,16 +61,16 @@ class WeatherFragment : Fragment() {
             Observer { response ->
                 when (response) {
                     is Resource.Success -> {
-                        // hideProgressBar()
+                        hideProgressBar(binding)
                         response.data?.let {
                             bindViews(it, binding, context)
                         }
                     }
                     is Resource.Loading -> {
-                        //showProgressBar()
+                        showProgressBar(binding)
                     }
                     is Resource.Error -> {
-                        //hideProgressBar()
+                        hideProgressBar(binding)
                         response.message?.let { message ->
                             Log.e(TAG, "An error occured: $message")
                         }
@@ -74,7 +84,18 @@ class WeatherFragment : Fragment() {
 private fun bindViews(response: WeatherForecastResponse, binding: WeatherFragmentBinding, context: Context?) {
     binding.tvNameOfCity.text = response.name
     binding.tvCountryCode.text = response.sys.country
+    binding.tvTemperature.text = "${response.main.temp}°С"
+    binding.tvTemperatureFeelsLike.text = "Feels like ${response.main.feels_like}°С"
+    binding.tvStateOfSky.text = "${response.weather[0].description}"
     Glide.with(context!!).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivTestImage)
+}
+
+private fun hideProgressBar(binding: WeatherFragmentBinding) {
+    binding.progressBar.visibility = View.INVISIBLE
+}
+
+private fun showProgressBar(binding: WeatherFragmentBinding) {
+    binding.progressBar.visibility = View.VISIBLE
 }
 
 // lifecycleScope.launchWhenCreated {
