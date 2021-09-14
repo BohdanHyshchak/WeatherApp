@@ -8,10 +8,12 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.Embedded
 import com.example.weather_app.WeatherForecastApplication
 import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.models.WeatherForecastResponse
 import com.example.weather_app.utils.Resource
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -58,14 +60,14 @@ class WeatherViewModel(
         // return Resource.Error("Database is empty :(")
     }
 
-    private fun safeWeatherForecastResponse(nameOfCity: String) = viewModelScope.launch {
+    fun safeWeatherForecastResponse(nameOfCity: String) = viewModelScope.launch {
         if (hasInternetConnection())
             getWeatherForecastFromAPI(nameOfCity)
         else
             getWeatherForecastFromDB()
     }
 
-    private fun hasInternetConnection(): Boolean {
+    fun hasInternetConnection(): Boolean {
         val connectivityManager = getApplication<WeatherForecastApplication>().getSystemService(
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
