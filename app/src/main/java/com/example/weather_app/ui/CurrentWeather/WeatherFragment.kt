@@ -32,13 +32,12 @@ class WeatherFragment : Fragment() {
     private lateinit var binding: WeatherFragmentBinding
     lateinit var viewModel: WeatherViewModel
 
-    //@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
