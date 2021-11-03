@@ -1,4 +1,4 @@
-package com.example.weather_app.models
+package com.example.weather_app.models.current
 
 data class Weather(
     var description: String,

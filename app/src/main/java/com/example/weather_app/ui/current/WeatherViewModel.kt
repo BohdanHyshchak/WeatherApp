@@ -1,4 +1,4 @@
-package com.example.weather_app.ui.CurrentWeather
+package com.example.weather_app.ui.current
 
 import android.app.Application
 import android.content.Context
@@ -8,12 +8,10 @@ import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.Embedded
 import com.example.weather_app.WeatherForecastApplication
 import com.example.weather_app.api.repositories.WeatherForecastRepository
-import com.example.weather_app.models.WeatherForecastResponse
+import com.example.weather_app.models.current.WeatherForecastResponse
 import com.example.weather_app.utils.Resource
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

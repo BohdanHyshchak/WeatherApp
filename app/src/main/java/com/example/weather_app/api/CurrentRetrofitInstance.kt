@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class RetrofitInstance {
+class CurrentRetrofitInstance {
     companion object {
 
         private val retrofit by lazy {
@@ -23,7 +23,7 @@ class RetrofitInstance {
         }
 
         val api by lazy {
-            retrofit.create(WeatherAPI::class.java)
+            retrofit.create(CurrentWeatherAPI::class.java)
         }
     }
 }

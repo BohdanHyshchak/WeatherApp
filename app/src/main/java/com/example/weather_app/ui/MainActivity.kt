@@ -6,10 +6,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.example.weather_app.R
-import com.example.weather_app.ui.CurrentWeather.WeatherViewModel
+import com.example.weather_app.ui.current.WeatherViewModel
 
 class MainActivity : AppCompatActivity() {
 

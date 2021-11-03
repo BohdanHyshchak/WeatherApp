@@ -1,6 +1,7 @@
-package com.example.weather_app.models
+package com.example.weather_app.models.current
 
 import androidx.room.*
+import com.example.weather_app.models.current.*
 
 const val WEATHER_FORECAST_ID = 0
 @Entity(

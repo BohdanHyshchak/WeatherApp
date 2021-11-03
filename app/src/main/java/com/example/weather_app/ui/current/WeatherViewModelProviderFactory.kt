@@ -1,4 +1,4 @@
-package com.example.weather_app.ui.CurrentWeather
+package com.example.weather_app.ui.current
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ class WeatherViewModelProviderFactory(
     private val app: Application
 ) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return WeatherViewModel(weatherForecastRepository, app) as T
     }
 }

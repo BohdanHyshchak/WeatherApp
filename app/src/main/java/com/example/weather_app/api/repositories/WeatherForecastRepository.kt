@@ -1,6 +1,6 @@
 package com.example.weather_app.api.repositories
 
-import com.example.weather_app.api.RetrofitInstance
+import com.example.weather_app.api.CurrentRetrofitInstance
 import com.example.weather_app.db.WeatherForecastDatabase
 
 class WeatherForecastRepository(
@@ -8,5 +8,5 @@ class WeatherForecastRepository(
 ) {
 
     suspend fun getWeatherForecast(nameOfCity: String) =
-        RetrofitInstance.api.getWeatherForecast(nameOfCity)
+        CurrentRetrofitInstance.api.getWeatherForecast(nameOfCity)
 }

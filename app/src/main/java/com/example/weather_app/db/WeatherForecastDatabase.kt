@@ -1,12 +1,11 @@
 package com.example.weather_app.db
 
-import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.weather_app.models.WeatherForecastResponse
-import com.example.weather_app.ui.CurrentWeather.WeatherFragment
+import com.example.weather_app.models.current.WeatherForecastResponse
+import com.example.weather_app.ui.current.WeatherFragment
 
 @Database(
     entities = [WeatherForecastResponse::class],
