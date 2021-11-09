@@ -9,8 +9,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.weather_app.WeatherForecastApplication
+import com.example.weather_app.api.FutureRetrofitInstance
 import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.models.current.WeatherForecastResponse
+import com.example.weather_app.models.future.FutureForecastResponse
 import com.example.weather_app.utils.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
@@ -21,32 +23,46 @@ class WeatherViewModel(
 ) : AndroidViewModel(app) {
 
     val weatherForecast: MutableLiveData<Resource<WeatherForecastResponse>> = MutableLiveData()
+    val futureWeatherForecast: MutableLiveData<Resource<FutureForecastResponse>> = MutableLiveData()
     val internetConnection: MutableLiveData<Boolean> = MutableLiveData()
+
+    val prefs = app.getSharedPreferences("Main View Model", Context.MODE_PRIVATE)
+    val HAS_DB_CREATED = "hasDbCreated"
+    var isDbCreated = false
 
     init {
         // getWeatherForecast("Kyiv")
-        safeWeatherForecastResponse("Kyiv")
+        isDbCreated = prefs.getBoolean(HAS_DB_CREATED, false) // checking if db has created already
+        safeWeatherForecastResponse()
     }
 
-    private suspend fun insertData(response: WeatherForecastResponse) {
-        weatherForecastRepository.db.getWeatherForecastDao().upsert(response)
+    private suspend fun insertCurrentData(currentResponse: WeatherForecastResponse) {
+        weatherForecastRepository.db.getWeatherForecastDao().upsertCurrent(currentResponse)
     }
 
-    private suspend fun getWeatherForecastFromAPI(nameOfCity: String) {
+    private suspend fun insertFutureData(futureResponse: FutureForecastResponse) {
+        weatherForecastRepository.db.getWeatherForecastDao().upsertFuture(futureResponse)
+    }
+
+    suspend fun getWeatherForecastFromAPI(nameOfCity: String) {
         weatherForecast.postValue(Resource.Loading())
-        val response = weatherForecastRepository.getWeatherForecast(nameOfCity)
-        weatherForecast.postValue(handleWeatherForecastResponse(response))
+        val currentResponse = weatherForecastRepository.getWeatherForecast(nameOfCity)
+        weatherForecast.postValue(handleWeatherForecastResponse(currentResponse))
+        if (currentResponse.isSuccessful) {
+            getFutureForecastResponse(currentResponse)
+        }
     }
 
     private suspend fun getWeatherForecastFromDB() {
-        val dbResponse = weatherForecastRepository.db.getWeatherForecastDao().getWeatherForecast()
+        val dbResponse = weatherForecastRepository.db.getWeatherForecastDao().getCurrentWeatherForecast()
         weatherForecast.postValue(handleWeatherForecastFromDB(dbResponse))
     }
 
     private suspend fun handleWeatherForecastResponse(response: Response<WeatherForecastResponse>): Resource<WeatherForecastResponse> {
         if (response.isSuccessful) {
             response.body()?.let {
-                insertData(it)
+                insertCurrentData(it)
+                prefs.edit().putBoolean(HAS_DB_CREATED, true).apply()
                 return Resource.Success(it)
             }
         }
@@ -58,11 +74,46 @@ class WeatherViewModel(
         // return Resource.Error("Database is empty :(")
     }
 
-    fun safeWeatherForecastResponse(nameOfCity: String) = viewModelScope.launch {
-        if (hasInternetConnection())
-            getWeatherForecastFromAPI(nameOfCity)
-        else
+    fun safeWeatherForecastResponse() = viewModelScope.launch {
+        if (hasInternetConnection()) {
+            if (isDbCreated == true) {
+                val nameOfCityFromDB = weatherForecastRepository.db.getWeatherForecastDao().getCurrentWeatherForecast().name
+                getWeatherForecastFromAPI(nameOfCityFromDB)
+            } else {
+                getWeatherForecastFromAPI("Kyiv")
+            }
+        } else {
             getWeatherForecastFromDB()
+            getFutureForecastFromDB()
+        }
+    }
+
+    private suspend fun getFutureForecastResponse(currentResponse: Response<WeatherForecastResponse>) {
+        val latitude = currentResponse.body()!!.coord.lat
+        val longitude = currentResponse.body()!!.coord.lon
+        val futureResponse = FutureRetrofitInstance.api.getFutureForecast(latitude, longitude)
+        futureWeatherForecast.postValue(handleFutureWeatherForecastResponse(futureResponse))
+    }
+
+    private suspend fun getFutureForecastFromDB() {
+        val dbResponse = weatherForecastRepository.db.getWeatherForecastDao().getFutureWeatherForecast()
+        futureWeatherForecast.postValue(handleFutureForecastFromDB(dbResponse))
+    }
+
+    private suspend fun handleFutureWeatherForecastResponse(futureResponse: Response<FutureForecastResponse>): Resource<FutureForecastResponse> {
+        if (futureResponse.isSuccessful) {
+            futureResponse.body()?.let {
+                insertFutureData(it)
+                return Resource.Success(it)
+            }
+        }
+        return Resource.Error("FutureResponse is wrong")
+    }
+
+    private fun handleFutureForecastFromDB(futureResponse: FutureForecastResponse): Resource<FutureForecastResponse> {
+        // Log.d("WeatherViewModel", "${futureResponse.lat}")
+        return Resource.Success(futureResponse)
+        // return Resource.Error("Database is empty :(")
     }
 
     fun hasInternetConnection(): Boolean {

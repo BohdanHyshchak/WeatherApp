@@ -5,4 +5,6 @@ data class Weather(
     val icon: String,
     val id: Int,
     val main: String
-)
+) {
+    constructor() : this("", "", 0, "")
+}

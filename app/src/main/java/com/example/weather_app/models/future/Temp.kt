@@ -7,4 +7,6 @@ data class Temp(
     val min: Double,
     val morn: Double,
     val night: Double
-)
+) {
+    constructor() : this(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+}

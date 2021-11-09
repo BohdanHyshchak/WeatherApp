@@ -5,4 +5,6 @@ data class FeelsLike(
     val eve: Double,
     val morn: Double,
     val night: Double
-)
+) {
+    constructor() : this(0.0, 0.0, 0.0, 0.0)
+}

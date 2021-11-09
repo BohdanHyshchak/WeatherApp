@@ -11,6 +11,8 @@ interface CurrentWeatherAPI {
     suspend fun getWeatherForecast(
         @Query("q")
         nameOfCityQuery: String,
+        @Query("units")
+        units: String = "metric",
         @Query("appid")
         apiKey: String = API_KEY
     ): Response<WeatherForecastResponse>

@@ -19,6 +19,7 @@ android {
     }
     buildFeatures{
         dataBinding = true
+        viewBinding = true
     }
     buildTypes {
     }
@@ -70,6 +71,9 @@ dependencies {
 
     // KTX
     implementation 'androidx.core:core-ktx:1.7.0'
+
+    // Recyclerview
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
     // Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"

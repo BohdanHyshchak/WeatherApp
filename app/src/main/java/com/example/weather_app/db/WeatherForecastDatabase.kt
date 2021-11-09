@@ -5,10 +5,11 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.weather_app.models.current.WeatherForecastResponse
+import com.example.weather_app.models.future.FutureForecastResponse
 import com.example.weather_app.ui.current.WeatherFragment
 
 @Database(
-    entities = [WeatherForecastResponse::class],
+    entities = [WeatherForecastResponse::class, FutureForecastResponse::class],
     version = 1,
     exportSchema = false
 )

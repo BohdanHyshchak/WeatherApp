@@ -20,6 +20,7 @@
             android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFutureWeatherSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -73,7 +74,7 @@
                 android:id="@+id/tvNameOfCity"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="City"
                 android:textSize="30sp"
@@ -86,6 +87,7 @@
                 android:layout_height="wrap_content"
                 android:text="CountryCode"
                 android:textSize="15sp"
+                android:layout_marginStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvNameOfCity" />
 
@@ -143,8 +145,8 @@
 
             <ImageView
                 android:id="@+id/ivTestImage"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
