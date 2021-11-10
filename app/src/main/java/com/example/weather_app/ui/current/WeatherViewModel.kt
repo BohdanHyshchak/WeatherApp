@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,7 @@ import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.models.current.WeatherForecastResponse
 import com.example.weather_app.models.future.FutureForecastResponse
 import com.example.weather_app.utils.Resource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
@@ -34,6 +36,16 @@ class WeatherViewModel(
         // getWeatherForecast("Kyiv")
         isDbCreated = prefs.getBoolean(HAS_DB_CREATED, false) // checking if db has created already
         safeWeatherForecastResponse()
+        testingLifecycle()
+    }
+    private fun testingLifecycle() = viewModelScope.launch {
+        var count = 1
+        Log.d("KEK", "KEK")
+        while (true) {
+            Log.d("WeatherViewModel", count.toString())
+            count++
+            delay(1000L)
+        }
     }
 
     private suspend fun insertCurrentData(currentResponse: WeatherForecastResponse) {

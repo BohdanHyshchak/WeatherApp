@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.weather_app.R
@@ -69,6 +70,10 @@ class WeatherFragment : Fragment() {
             }
             binding.etSearch.hideKeyboard()
             binding.etSearch.text.clear()
+        }
+
+        binding.btnTest.setOnClickListener {
+            findNavController().navigate(R.id.action_weatherFragment_to_testFragment)
         }
 
 //        val dateTime = LocalDateTime.now().atOffset(ZoneOffset.UTC)
