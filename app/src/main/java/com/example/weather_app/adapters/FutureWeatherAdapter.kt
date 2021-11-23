@@ -26,7 +26,7 @@ class FutureWeatherAdapter : RecyclerView.Adapter<FutureWeatherAdapter.ForecastV
                 Log.d("Future Adapter", "${response.weather.size}")
                 Glide.with(binding.root).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(ivIcon)
                 tvTemperature.text = "${response.temp.day.roundToInt()}°С"
-                tvHumidity.text = "${(response.pop * 100).roundToInt()}%"
+                tvProbability.text = "${(response.pop * 100).roundToInt()}%"
                 tvNameOfDay.text = "${getDay(response.dt * 1000L)}"
             }
         }
@@ -70,13 +70,13 @@ class FutureWeatherAdapter : RecyclerView.Adapter<FutureWeatherAdapter.ForecastV
 
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = millis
-        return when(calendar.get(Calendar.DAY_OF_WEEK)) {
-            0 -> "Sun"
-            1 -> "Mon"
-            2 -> "Tue"
-            3 -> "Wed"
-            4 -> "Thu"
-            5 -> "Fri"
+        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
+            1 -> "Sun"
+            2 -> "Mon"
+            3 -> "Tue"
+            4 -> "Wed"
+            5 -> "Thu"
+            6 -> "Fri"
             else -> "Sat"
         }
     }

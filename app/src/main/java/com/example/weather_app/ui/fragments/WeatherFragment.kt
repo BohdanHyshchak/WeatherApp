@@ -1,10 +1,11 @@
-package com.example.weather_app.ui.current
+package com.example.weather_app.ui.fragments
 
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -12,29 +13,32 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather_app.R
 import com.example.weather_app.adapters.FutureWeatherAdapter
-import com.example.weather_app.api.FutureRetrofitInstance
-import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.databinding.WeatherFragmentBinding
-import com.example.weather_app.db.WeatherForecastDatabase
 import com.example.weather_app.models.current.WeatherForecastResponse
+import com.example.weather_app.models.future.Daily
 import com.example.weather_app.models.future.FutureForecastResponse
+import com.example.weather_app.ui.viewmodels.WeatherViewModel
 import com.example.weather_app.utils.Resource
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class WeatherFragment : Fragment() {
 
     val TAG = "Weather Fragment"
     private lateinit var binding: WeatherFragmentBinding
-    lateinit var viewModel: WeatherViewModel
+    private val viewModel: WeatherViewModel by viewModels()
     lateinit var weatherAdapter: FutureWeatherAdapter
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -51,9 +55,6 @@ class WeatherFragment : Fragment() {
             container,
             false
         )
-        val weatherForecastRepository = WeatherForecastRepository(WeatherForecastDatabase(this))
-        val viewModelFactory = WeatherViewModelProviderFactory(weatherForecastRepository, this.requireActivity().application)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(WeatherViewModel::class.java)
 
         setupRecycleView()
 
@@ -75,11 +76,6 @@ class WeatherFragment : Fragment() {
         binding.btnTest.setOnClickListener {
             findNavController().navigate(R.id.action_weatherFragment_to_testFragment)
         }
-
-//        val dateTime = LocalDateTime.now().atOffset(ZoneOffset.UTC)
-//        val currentTime = LocalDateTime.now().toLocalTime()
-//        binding.tvTime.text = dateTime.toString()
-//        binding.tvDate.text = currentTime.toString()
 
         viewModel.weatherForecast.observe(
             viewLifecycleOwner,
@@ -112,6 +108,7 @@ class WeatherFragment : Fragment() {
                         hideProgressBar()
                         futureResponse.data?.let {
                             bindViewsFuture(it)
+                            bindCircles(it)
                         }
                     }
                     is Resource.Loading -> {
@@ -126,29 +123,7 @@ class WeatherFragment : Fragment() {
                 }
             }
         )
-
-//        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-//            val response = FutureRetrofitInstance.api.getFutureForecast()
-//            if (response.isSuccessful && response.body().toString().isNotEmpty()) {
-//
-//            }
-//        }
-
-        // testCheckForConnection()
         return binding.root
-    }
-
-//    private fun testCheckForConnection() {
-//        viewModel.internetConnection.observeForever {
-//            if (it) {
-//                binding.tvStateOfSky.text = "Available"
-//            } else {
-//                binding.tvStateOfSky.text = "Unavailable"
-//            }
-//        }
-//    }
-
-    private fun setUI() {
     }
 
     private fun bindViews(response: WeatherForecastResponse) {
@@ -161,15 +136,49 @@ class WeatherFragment : Fragment() {
         Glide.with(this).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivTestImage)
     }
 
+    private fun bindCircles(futureForecastResponse: FutureForecastResponse) {
+        val currentDay = futureForecastResponse.daily[0]
+        val currentHour = futureForecastResponse.hourly[0]
+
+        binding.tvProbability.text = "${(currentHour.pop * 100).roundToInt()}%"
+        binding.tvPressure.text = currentHour.pressure.toString() + " mb"
+        binding.tvWindSpeed.text = currentHour.wind_speed.toString() + " km/h"
+        binding.tvWindDirection.text = getWindDirection(currentHour.wind_deg)
+        binding.tvHumidity.text = currentHour.humidity.toString() + "%"
+        binding.tvVisibility.text = "${(currentHour.visibility / 1000)} km"
+        binding.tvPrecipitation.text = currentDay.rain.roundToInt().toString() + " mm"
+    }
+
+    private fun getWindDirection(windDeg: Int): String {
+        val listOfDirections = listOf("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "N")
+        val number = (windDeg / 22.5).roundToInt() + 1
+        return listOfDirections[number - 1]
+    }
+
     private fun bindViewsFuture(response: FutureForecastResponse) {
-        weatherAdapter.differ.submitList(response.daily.toList())
+        val listOfDays: MutableList<Daily> = response.daily.toMutableList()
+        listOfDays.removeAt(0)
+        weatherAdapter.differ.submitList(listOfDays.toList())
     }
 
     private fun setupRecycleView() {
         weatherAdapter = FutureWeatherAdapter()
         binding.rvFutureWeatherSmall.apply {
             adapter = weatherAdapter
-            // layoutManager = LinearLayoutManager(this@WeatherFragment.requireContext())
+            // layoutManager = lm
+        }
+//        binding.rvFutureWeatherSmall.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+//                return true
+//            }
+//        })
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            delay(6000L)
+            for (i in 0..4) {
+                binding.rvFutureWeatherSmall.smoothScrollToPosition(i)
+                delay(2000L)
+            }
         }
     }
 

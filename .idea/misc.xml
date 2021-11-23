@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/activity_main.xml" value="0.14010416666666667" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/future_weather_fragment.xml" value="0.2" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/rcv_daily_forecast.xml" value="0.35311143270622286" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/rcv_detail_daily_forecast.xml" value="0.3864406779661017" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/test_fragment.xml" value="0.264" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/weather_fragment.xml" value="0.264" />
       </map>

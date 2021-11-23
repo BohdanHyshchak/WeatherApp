@@ -1,4 +1,4 @@
-package com.example.weather_app.ui.current
+package com.example.weather_app.ui.viewmodels
 
 import android.app.Application
 import android.content.Context
@@ -15,11 +15,14 @@ import com.example.weather_app.api.repositories.WeatherForecastRepository
 import com.example.weather_app.models.current.WeatherForecastResponse
 import com.example.weather_app.models.future.FutureForecastResponse
 import com.example.weather_app.utils.Resource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import javax.inject.Inject
 
-class WeatherViewModel(
+@HiltViewModel
+class WeatherViewModel @Inject constructor(
     private val weatherForecastRepository: WeatherForecastRepository,
     app: Application
 ) : AndroidViewModel(app) {
@@ -49,11 +52,11 @@ class WeatherViewModel(
     }
 
     private suspend fun insertCurrentData(currentResponse: WeatherForecastResponse) {
-        weatherForecastRepository.db.getWeatherForecastDao().upsertCurrent(currentResponse)
+        weatherForecastRepository.weatherDao.upsertCurrent(currentResponse)
     }
 
     private suspend fun insertFutureData(futureResponse: FutureForecastResponse) {
-        weatherForecastRepository.db.getWeatherForecastDao().upsertFuture(futureResponse)
+        weatherForecastRepository.weatherDao.upsertFuture(futureResponse)
     }
 
     suspend fun getWeatherForecastFromAPI(nameOfCity: String) {
@@ -66,7 +69,7 @@ class WeatherViewModel(
     }
 
     private suspend fun getWeatherForecastFromDB() {
-        val dbResponse = weatherForecastRepository.db.getWeatherForecastDao().getCurrentWeatherForecast()
+        val dbResponse = weatherForecastRepository.weatherDao.getCurrentWeatherForecast()
         weatherForecast.postValue(handleWeatherForecastFromDB(dbResponse))
     }
 
@@ -89,7 +92,7 @@ class WeatherViewModel(
     fun safeWeatherForecastResponse() = viewModelScope.launch {
         if (hasInternetConnection()) {
             if (isDbCreated == true) {
-                val nameOfCityFromDB = weatherForecastRepository.db.getWeatherForecastDao().getCurrentWeatherForecast().name
+                val nameOfCityFromDB = weatherForecastRepository.weatherDao.getCurrentWeatherForecast().name
                 getWeatherForecastFromAPI(nameOfCityFromDB)
             } else {
                 getWeatherForecastFromAPI("Kyiv")
@@ -108,7 +111,7 @@ class WeatherViewModel(
     }
 
     private suspend fun getFutureForecastFromDB() {
-        val dbResponse = weatherForecastRepository.db.getWeatherForecastDao().getFutureWeatherForecast()
+        val dbResponse = weatherForecastRepository.weatherDao.getFutureWeatherForecast()
         futureWeatherForecast.postValue(handleFutureForecastFromDB(dbResponse))
     }
 

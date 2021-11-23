@@ -1,4 +1,4 @@
-package com.example.weather_app.ui
+package com.example.weather_app.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,13 +7,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.example.weather_app.R
-import com.example.weather_app.databinding.TestFragmentBinding
-import com.example.weather_app.databinding.WeatherFragmentBinding
+import com.example.weather_app.databinding.FutureWeatherFragmentBinding
 
-class TestFragment : Fragment() {
+class FutureWeatherFragment : Fragment() {
 
     val TAG = "Test Fragment"
-    private lateinit var binding: TestFragmentBinding
+    private lateinit var binding: FutureWeatherFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -24,7 +23,7 @@ class TestFragment : Fragment() {
         // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.test_fragment,
+            R.layout.future_weather_fragment,
             container,
             false
         )
