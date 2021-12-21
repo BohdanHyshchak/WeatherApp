@@ -16,7 +16,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/background_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,7 +29,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/background_gray"
             tools:ignore="RtlSymmetry">
 
@@ -273,7 +273,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvPressure" />
 
                 <TextView
-                    android:id="@+id/tvDevPointDescription"
+                    android:id="@+id/tvDewPointDescription"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -305,7 +305,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:text="Temperature"
+                    android:text="Temp"
                     android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -329,6 +329,7 @@
                     android:layout_height="wrap_content"
                     android:text="Feels like"
                     android:textSize="20sp"
+                    android:layout_marginEnd="8dp"
                     app:layout_constraintBottom_toBottomOf="@+id/tvTemperature"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/tvTemperature" />
@@ -513,8 +514,8 @@
 
                         <ImageView
                             android:id="@+id/ivIconSun"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             app:layout_constraintHorizontal_bias="0.5"
@@ -536,7 +537,7 @@
                             android:id="@+id/tvSunriseText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginStart="16dp"
                             android:text="Sunrise"
                             android:textSize="20sp"
@@ -591,8 +592,8 @@
 
                         <ImageView
                             android:id="@+id/ivIconMoon"
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
+                            android:layout_width="70dp"
+                            android:layout_height="70dp"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
                             app:layout_constraintHorizontal_bias="0.5"
@@ -615,9 +616,9 @@
                             android:id="@+id/tvMoonriseText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginStart="16dp"
-                            android:text="Sunrise"
+                            android:text="Moonrise"
                             android:textSize="20sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/ivIconMoon" />
@@ -639,7 +640,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
                             android:layout_marginStart="16dp"
-                            android:text="Sunset"
+                            android:text="Moonset"
                             android:textSize="20sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/tvMoonriseText" />

@@ -3,12 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.17239583333333333" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/drawable/ic_settings.xml" value="0.17239583333333333" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/activity_main.xml" value="0.14010416666666667" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/future_weather_fragment.xml" value="0.2" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/rcv_daily_forecast.xml" value="0.35311143270622286" />
-        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/rcv_detail_daily_forecast.xml" value="0.3864406779661017" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/rcv_detail_daily_forecast.xml" value="0.32057416267942584" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/test_fragment.xml" value="0.264" />
         <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/layout/weather_fragment.xml" value="0.264" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/menu/nav_menu.xml" value="0.15625" />
+        <entry key="..\:/Users/PEKA/AndroidStudioProjects/Weather_App/app/src/main/res/xml/preferences.xml" value="0.15625" />
       </map>
     </option>
   </component>

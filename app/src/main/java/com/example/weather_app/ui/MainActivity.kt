@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.settingsFragment -> navController.navigate(
-                R.id.action_weatherFragment_to_settingsFragment
+                R.id.settingsFragment
             )
         }
         return super.onOptionsItemSelected(item)

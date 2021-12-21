@@ -20,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
@@ -39,16 +40,6 @@ class WeatherViewModel @Inject constructor(
         // getWeatherForecast("Kyiv")
         isDbCreated = prefs.getBoolean(HAS_DB_CREATED, false) // checking if db has created already
         safeWeatherForecastResponse()
-        testingLifecycle()
-    }
-    private fun testingLifecycle() = viewModelScope.launch {
-        var count = 1
-        Log.d("KEK", "KEK")
-        while (true) {
-            Log.d("WeatherViewModel", count.toString())
-            count++
-            delay(1000L)
-        }
     }
 
     private suspend fun insertCurrentData(currentResponse: WeatherForecastResponse) {

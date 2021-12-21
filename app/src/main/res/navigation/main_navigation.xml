@@ -11,8 +11,8 @@
             android:id="@+id/action_weatherFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
         <action
-            android:id="@+id/action_weatherFragment_to_testFragment"
-            app:destination="@id/testFragment" />
+            android:id="@+id/action_weatherFragment_to_futureWeatherFragment"
+            app:destination="@id/futureWeatherFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -23,7 +23,11 @@
             app:destination="@id/weatherFragment" />
     </fragment>
     <fragment
-        android:id="@+id/testFragment"
+        android:id="@+id/futureWeatherFragment"
         android:name="com.example.weather_app.ui.fragments.FutureWeatherFragment"
-        android:label="TestFragment" />
+        android:label="FutureWeatherFragment" >
+        <action
+            android:id="@+id/action_futureWeatherFragment_to_weatherFragment"
+            app:destination="@id/weatherFragment" />
+    </fragment>
 </navigation>

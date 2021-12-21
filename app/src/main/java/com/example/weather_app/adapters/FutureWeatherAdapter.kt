@@ -14,12 +14,6 @@ import kotlin.math.roundToInt
 
 class FutureWeatherAdapter : RecyclerView.Adapter<FutureWeatherAdapter.ForecastViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val binding = RcvDailyForecastBinding.inflate(inflater, parent, false)
-        return ForecastViewHolder(binding)
-    }
-
     inner class ForecastViewHolder(val binding: RcvDailyForecastBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(response: Daily) {
             binding.apply {
@@ -49,6 +43,12 @@ class FutureWeatherAdapter : RecyclerView.Adapter<FutureWeatherAdapter.ForecastV
     }
 
     val differ = AsyncListDiffer(this, differCallBack)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = RcvDailyForecastBinding.inflate(inflater, parent, false)
+        return ForecastViewHolder(binding)
+    }
 
     override fun getItemCount(): Int {
         return differ.currentList.size

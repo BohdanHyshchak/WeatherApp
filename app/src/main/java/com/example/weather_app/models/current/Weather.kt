@@ -6,5 +6,5 @@ data class Weather(
     var id: Int,
     var main: String
 ) {
-    constructor(): this("", "", 0, "")
+    constructor() : this("", "", 0, "")
 }
