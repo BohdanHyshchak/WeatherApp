@@ -34,6 +34,18 @@
                 android:layout_height="match_parent"
                 android:paddingBottom="20dp">
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/gCity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="tvNameOfCity,tvCountryCode" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/gSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="btnBackForSearch,etSearch" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvFutureWeatherSmall"
                     android:layout_width="wrap_content"

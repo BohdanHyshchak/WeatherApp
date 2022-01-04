@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -39,95 +40,83 @@ import kotlin.math.roundToInt
 class WeatherFragment : Fragment() {
 
     val TAG = "Weather Fragment"
-    private lateinit var binding: WeatherFragmentBinding
+    private var _binding: WeatherFragmentBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: WeatherViewModel by activityViewModels()
     lateinit var weatherAdapter: FutureWeatherAdapter
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        binding = DataBindingUtil.inflate(
+        _binding = DataBindingUtil.inflate(
             inflater,
             R.layout.weather_fragment,
             container,
             false
         )
+        return binding.root
+    }
 
-        setupRecycleView()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setupRecyclerView()
         blurBackground()
         bindButtons()
+        initObservers()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setBackground()
+    }
+
+    private fun initObservers() {
         viewModel.weatherForecast.observe(
             viewLifecycleOwner,
-            Observer { response ->
-                when (response) {
-                    is Resource.Success -> {
-                        hideProgressBar()
-                        response.data?.let {
-                            bindViews(it)
-                        }
-                    }
-                    is Resource.Loading -> {
-                        showProgressBar()
-                    }
-                    is Resource.Error -> {
-                        hideProgressBar()
-                        response.message?.let { message ->
-                            Log.e(TAG, "An error occured: $message")
-                        }
-                    }
-                }
+            { response ->
+                bindViews(response)
             }
         )
 
         viewModel.futureWeatherForecast.observe(
             viewLifecycleOwner,
-            Observer { futureResponse ->
-                when (futureResponse) {
-                    is Resource.Success -> {
-                        hideProgressBar()
-                        futureResponse.data?.let {
-                            bindViewsFuture(it)
-                            bindCircles(it)
-                        }
-                    }
-                    is Resource.Loading -> {
-                        showProgressBar()
-                    }
-                    is Resource.Error -> {
-                        hideProgressBar()
-                        futureResponse.message?.let { message ->
-                            Log.e(TAG, "An error occured: $message")
-                        }
-                    }
-                }
+            { futureResponse ->
+                bindViewsFuture(futureResponse)
+                bindCircles(futureResponse)
             }
         )
-        return binding.root
+
+        viewModel.isProgressBarShown.observe(
+            viewLifecycleOwner,
+            {
+                binding.progressBar.isVisible = it
+            }
+        )
     }
 
-    private fun setupRecycleView() {
-        // set background
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            Glide.with(this@WeatherFragment).load(R.drawable.background_main)
-                .into(object : SimpleTarget<Drawable?>() {
-                    override fun onResourceReady(
-                        resource: Drawable,
-                        transition: Transition<in Drawable?>?
-                    ) {
-                        binding.relativeLayout.setBackground(resource)
-                    }
-                })
-        }
+    private fun setupRecyclerView() {
         weatherAdapter = FutureWeatherAdapter()
         binding.rvFutureWeatherSmall.apply {
             adapter = weatherAdapter
             // layoutManager = lm
         }
+    }
+
+    private fun setBackground() {
+        Glide.with(this@WeatherFragment).load(R.drawable.background_main)
+            .into(object : SimpleTarget<Drawable?>() {
+                override fun onResourceReady(
+                    resource: Drawable,
+                    transition: Transition<in Drawable?>?
+                ) {
+                    binding.relativeLayout.setBackground(resource)
+                }
+            })
     }
 
     private fun blurBackground() {
@@ -147,7 +136,7 @@ class WeatherFragment : Fragment() {
                             resource: Drawable,
                             transition: Transition<in Drawable?>?
                         ) {
-                            binding.relativeLayout.setBackground(resource)
+                            binding.relativeLayout.background = resource
                         }
                     })
             }
@@ -161,7 +150,7 @@ class WeatherFragment : Fragment() {
                     resource: Drawable,
                     transition: Transition<in Drawable?>?
                 ) {
-                    binding.relativeLayout.setBackground(resource)
+                    binding.relativeLayout.background = resource
                 }
             })
         }
@@ -169,47 +158,20 @@ class WeatherFragment : Fragment() {
 
     private fun bindButtons() {
         binding.btnSearch.setOnClickListener {
-            binding.etSearch.visibility = View.VISIBLE
-            binding.btnBackForSearch.visibility = View.VISIBLE
-            binding.tvNameOfCity.visibility = View.GONE
-            binding.tvCountryCode.visibility = View.GONE
+            binding.gCity.isVisible = false
+            binding.gSearch.isVisible = true
         }
-
-//        val searchText = binding.etSearch.text
-//        if (searchText != null) {
-//            if (viewModel.hasInternetConnection()) {
-//                viewLifecycleOwner.lifecycleScope.launch {
-//                    viewModel.getWeatherForecastFromAPI(searchText.toString())
-//                }
-//            } else {
-//                Toast.makeText(requireContext(), "No Internet connection", Toast.LENGTH_SHORT).show()
-//            }
-//        }
-//        binding.etSearch.hideKeyboard()
-//        binding.etSearch.text.clear()
-//        binding.tvNameOfCity.visibility = View.VISIBLE
-//        binding.tvCountryCode.visibility = View.VISIBLE
-//        binding.etSearch.visibility = View.GONE
-//        binding.btnBackForSearch.visibility = View.GONE
 
         binding.etSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId != 0 || event.action == KeyEvent.ACTION_DOWN) {
                 val searchText = binding.etSearch.text
-                if (searchText != null) {
-                    if (viewModel.hasInternetConnection()) {
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            viewModel.getWeatherForecastFromAPI(searchText.toString())
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "No Internet connection", Toast.LENGTH_SHORT).show()
-                    }
+                if (searchText.isNotBlank()) {
+                    viewModel.setNameOfCity(searchText.toString())
                 }
                 binding.etSearch.hideKeyboard()
                 binding.etSearch.text.clear()
-                binding.tvNameOfCity.visibility = View.VISIBLE
-                binding.tvCountryCode.visibility = View.VISIBLE
-                binding.etSearch.visibility = View.GONE
-                binding.btnBackForSearch.visibility = View.GONE
+                binding.gCity.isVisible = true
+                binding.gSearch.isVisible = false
                 true
             } else {
                 false
@@ -217,10 +179,8 @@ class WeatherFragment : Fragment() {
         }
 
         binding.btnBackForSearch.setOnClickListener {
-            binding.tvNameOfCity.visibility = View.VISIBLE
-            binding.tvCountryCode.visibility = View.VISIBLE
-            binding.etSearch.visibility = View.GONE
-            binding.btnBackForSearch.visibility = View.GONE
+            binding.gCity.isVisible = false
+            binding.gSearch.isVisible = true
             binding.etSearch.hideKeyboard()
         }
 
@@ -262,7 +222,7 @@ class WeatherFragment : Fragment() {
     private fun bindViewsFuture(response: FutureForecastResponse) {
         val listOfDays: MutableList<Daily> = response.daily.toMutableList()
         listOfDays.removeAt(0)
-        weatherAdapter.differ.submitList(listOfDays.toList())
+        weatherAdapter.submitList(listOfDays.toList())
     }
 
     private fun hideProgressBar() {
@@ -271,5 +231,10 @@ class WeatherFragment : Fragment() {
 
     private fun showProgressBar() {
         binding.progressBar.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

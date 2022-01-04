@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.weather_app.databinding.RcvDetailDailyForecastBinding
@@ -14,11 +12,13 @@ import com.example.weather_app.utils.Constants.Companion.MOON_IMG_URL
 import com.example.weather_app.utils.Constants.Companion.SUN_IMG_URL
 import com.example.weather_app.utils.unixTimestampToHoursMinutesTimeString
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastViewHolder>() {
 
     val TAG = "Detail Future Adapter"
+    var arrayList: ArrayList<Daily>? = ArrayList()
 
     @SuppressLint("SetTextI18n")
     inner class ForecastViewHolder(private val binding: RcvDetailDailyForecastBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -38,7 +38,7 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
 
         private fun bindGeneralContainer(response: Daily) {
             binding.tvWindDescription.text = getWindInfo(response.wind_deg, response.wind_speed)
-            binding.tvWindGustDescription.text = "${response.wind_gust} km/h"
+            binding.tvWindGustDescription.text = "${response.wind_gust.roundToInt()} km/h"
             binding.tvCloudsDescription.text = "${response.clouds} %"
             binding.tvHumidityDescription.text = "${response.humidity} %"
             binding.tvProbabilityDescription.text = "${(response.pop * 100).roundToInt()} %"
@@ -72,23 +72,15 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
         }
     }
 
-    private val differCallBack = object : DiffUtil.ItemCallback<Daily>() {
-        override fun areItemsTheSame(
-            oldItem: Daily,
-            newItem: Daily
-        ): Boolean {
-            return oldItem.weather == newItem.weather
-        }
-
-        override fun areContentsTheSame(
-            oldItem: Daily,
-            newItem: Daily
-        ): Boolean {
-            return oldItem == newItem
+    fun setData(array: Array<Daily>) {
+        arrayList?.clear()
+        arrayList?.addAll(array)
+        arrayList?.let {
+            if (it.size > 0) {
+                notifyDataSetChanged()
+            }
         }
     }
-
-    val differ = AsyncListDiffer(this, differCallBack)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DetailFutureAdapter.ForecastViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -97,11 +89,13 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
     }
 
     override fun getItemCount(): Int {
-        return differ.currentList.size
+        return arrayList?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: DetailFutureAdapter.ForecastViewHolder, position: Int) {
-        holder.updateRCV(differ.currentList[position])
+        arrayList?.let {
+            holder.updateRCV(it[position])
+        }
     }
 
     private fun getDay(millis: Long): String {
@@ -121,15 +115,15 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
     private fun getDate(millis: Long): String {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = millis
-        val day = calendar.get(Calendar.DAY_OF_MONTH).toString()
-        val month = calendar.get(Calendar.MONTH).toString()
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val month = calendar.get(Calendar.MONTH) + 1
         return "$day.$month"
     }
 
     private fun getWindInfo(windDeg: Int, windSpeed: Double): String {
         val listOfDirections = listOf("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "N")
         val number = (windDeg / 22.5).roundToInt() + 1
-        return "${listOfDirections[number - 1]} $windSpeed km/h"
+        return "${listOfDirections[number - 1]} ${windSpeed.roundToInt()} km/h"
     }
 
     private fun dateMinusDate(firstMillis: Int, secondMillis: Int): String {

@@ -13,14 +13,14 @@ import com.example.weather_app.models.future.FutureForecastResponse
 interface WeatherForecastDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertCurrent(weatherForecast: WeatherForecastResponse)
+    suspend fun insertCurrent(weatherForecast: WeatherForecastResponse)
 
     @Query("select * from weather_forecast where idOfResponse = $WEATHER_FORECAST_ID")
-    suspend fun getCurrentWeatherForecast(): WeatherForecastResponse
+    suspend fun getCurrentWeatherForecast(): WeatherForecastResponse?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun upsertFuture(futureForecastResponse: FutureForecastResponse)
+    suspend fun insertFuture(futureForecastResponse: FutureForecastResponse)
 
     @Query("select * from future_weather_forecast where idOfFutureResponse = $FUTURE_WEATHER_FORECAST_ID")
-    suspend fun getFutureWeatherForecast(): FutureForecastResponse
+    suspend fun getFutureWeatherForecast(): FutureForecastResponse?
 }
