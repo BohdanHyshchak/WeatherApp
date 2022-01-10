@@ -7,6 +7,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:background="@color/background_gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,6 +21,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="16dp">
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/buttonsBarrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="btnNext,btnBack" />
 
             <Button
                 android:id="@+id/btnBack"
@@ -43,13 +51,13 @@
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/rvFutureWeatherForecast"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnNext" />
+                app:layout_constraintTop_toBottomOf="@id/buttonsBarrier" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

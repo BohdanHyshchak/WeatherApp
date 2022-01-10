@@ -9,14 +9,14 @@ import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.example.weather_app.R
-import com.example.weather_app.ui.viewmodels.WeatherViewModel
+import com.example.weather_app.ui.viewmodels.CurrentWeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     lateinit var navController: NavController
-    private val viewModel: WeatherViewModel by viewModels()
+    private val viewModel: CurrentWeatherViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

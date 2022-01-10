@@ -42,6 +42,7 @@
 
                 <androidx.constraintlayout.widget.Group
                     android:id="@+id/gSearch"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:constraint_referenced_ids="btnBackForSearch,etSearch" />
@@ -148,6 +149,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvNameOfCity" />
 
+                <Button
+                    android:id="@+id/btnTestGeo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="geo_Off"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvCountryCode" />
                 <TextView
                     android:id="@+id/tvTime"
                     android:layout_width="0dp"

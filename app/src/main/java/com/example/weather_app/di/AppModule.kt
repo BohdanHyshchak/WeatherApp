@@ -5,10 +5,12 @@ import androidx.room.Room
 import com.example.weather_app.api.WeatherService
 import com.example.weather_app.db.WeatherForecastDatabase
 import com.example.weather_app.utils.Constants
+import com.google.android.gms.location.FusedLocationProviderClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -64,6 +66,13 @@ object AppModule {
 
     @Provides
     fun provideWeatherService(retrofit: Retrofit): WeatherService = retrofit.create()
+
+    @Singleton
+    @Provides
+    fun provideFusedLocationProviderClient(
+        @ApplicationContext app: Context
+    ) = FusedLocationProviderClient(app)
+
 
     @Provides
     fun provideSharedPrefs(@ApplicationContext context: Context) = context.getSharedPreferences("NAME_OF_CITY", Context.MODE_PRIVATE)

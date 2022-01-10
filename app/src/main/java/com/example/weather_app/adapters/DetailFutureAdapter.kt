@@ -10,7 +10,7 @@ import com.example.weather_app.databinding.RcvDetailDailyForecastBinding
 import com.example.weather_app.models.future.Daily
 import com.example.weather_app.utils.Constants.Companion.MOON_IMG_URL
 import com.example.weather_app.utils.Constants.Companion.SUN_IMG_URL
-import com.example.weather_app.utils.unixTimestampToHoursMinutesTimeString
+import com.example.weather_app.utils.unixTimestampToDateString
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
@@ -30,8 +30,8 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
         }
 
         private fun bindTopContainer(response: Daily) {
-            binding.tvNameOfDay.text = getDay(response.dt * 1000L)
-            binding.tvDate.text = getDate(response.dt * 1000L)
+            binding.tvNameOfDay.text = response.dt.unixTimestampToDateString("EEEE")
+            binding.tvDate.text = response.dt.unixTimestampToDateString("dd.MM")
             Glide.with(binding.root).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivIcon)
             binding.tvDescription.text = response.weather[0].description
         }
@@ -61,10 +61,10 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
         private fun bindSunriseSunsetBlock(response: Daily) {
             Glide.with(binding.root).load(SUN_IMG_URL).into(binding.ivIconSun)
             Glide.with(binding.root).load(MOON_IMG_URL).into(binding.ivIconMoon)
-            binding.tvSunRiseTime.text = response.sunrise.unixTimestampToHoursMinutesTimeString()
-            binding.tvSunSetTime.text = response.sunset.unixTimestampToHoursMinutesTimeString()
-            binding.tvMoonRiseTime.text = response.moonrise.unixTimestampToHoursMinutesTimeString()
-            binding.tvMoonSetTime.text = response.moonset.unixTimestampToHoursMinutesTimeString()
+            binding.tvSunRiseTime.text = response.sunrise.unixTimestampToDateString("HH:mm")
+            binding.tvSunSetTime.text = response.sunset.unixTimestampToDateString("HH:mm")
+            binding.tvMoonRiseTime.text = response.moonrise.unixTimestampToDateString("HH:mm")
+            binding.tvMoonSetTime.text = response.moonset.unixTimestampToDateString("HH:mm")
             // Log.d(TAG, (response.sunset - response.sunrise).unixTimestampToHoursMinutesTimeString())
             dateMinusDate(response.sunrise, response.sunset)
             binding.tvDurationOfDay.text = dateMinusDate(response.sunrise, response.sunset)
@@ -95,20 +95,6 @@ class DetailFutureAdapter : RecyclerView.Adapter<DetailFutureAdapter.ForecastVie
     override fun onBindViewHolder(holder: DetailFutureAdapter.ForecastViewHolder, position: Int) {
         arrayList?.let {
             holder.updateRCV(it[position])
-        }
-    }
-
-    private fun getDay(millis: Long): String {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = millis
-        return when (calendar.get(Calendar.DAY_OF_WEEK)) {
-            1 -> "Sunday"
-            2 -> "Monday"
-            3 -> "Tuesday"
-            4 -> "Wednesday"
-            5 -> "Thursday"
-            6 -> "Friday"
-            else -> "Saturday"
         }
     }
 

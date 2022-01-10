@@ -8,14 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-fun Int.unixTimestampToHoursMinutesTimeString(): String {
+fun Int.unixTimestampToDateString(dateFormat: String): String {
 
     try {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = this * 1000.toLong()
-        val hours = calendar.get(Calendar.HOUR_OF_DAY)
-        val minutes = calendar.get(Calendar.MINUTE)
-        val outputDateFormat = SimpleDateFormat("HH:mm", Locale.CANADA)
+        val outputDateFormat = SimpleDateFormat(dateFormat, Locale.CANADA)
         outputDateFormat.timeZone = TimeZone.getDefault() // user's default time zone
         return outputDateFormat.format(calendar.time)
     } catch (e: Exception) {

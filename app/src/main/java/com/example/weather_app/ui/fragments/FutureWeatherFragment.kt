@@ -1,28 +1,31 @@
 package com.example.weather_app.ui.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.example.weather_app.R
 import com.example.weather_app.adapters.DetailFutureAdapter
 import com.example.weather_app.databinding.FutureWeatherFragmentBinding
-import com.example.weather_app.databinding.RcvDetailDailyForecastBinding
 import com.example.weather_app.models.future.Daily
 import com.example.weather_app.models.future.FutureForecastResponse
-import com.example.weather_app.ui.viewmodels.WeatherViewModel
+import com.example.weather_app.ui.viewmodels.FutureWeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FutureWeatherFragment : Fragment() {
 
     val TAG = "Future Weather Fragment"
-    private lateinit var binding: FutureWeatherFragmentBinding
-    private lateinit var rcvBinding: RcvDetailDailyForecastBinding
-    private val viewModel: WeatherViewModel by activityViewModels()
+    private var _binding: FutureWeatherFragmentBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel: FutureWeatherViewModel by activityViewModels()
     lateinit var weatherAdapter: DetailFutureAdapter
 
     // Todo: Replace RCV with ViewPager
@@ -34,35 +37,12 @@ class FutureWeatherFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = DataBindingUtil.inflate(
+        _binding = DataBindingUtil.inflate(
             inflater,
             R.layout.future_weather_fragment,
             container,
             false
         )
-        rcvBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.rcv_detail_daily_forecast,
-            container,
-            false
-        )
-
-//        binding.btnNext.setOnClickListener {
-//            val index = binding.rvFutureWeatherForecast.getCurrentPosition()
-//            Log.d(TAG, index.toString())
-//            binding.rvFutureWeatherForecast.smoothScrollToPosition(index + 1)
-//        }
-//
-//        binding.btnBack.setOnClickListener {
-//            val index = binding.rvFutureWeatherForecast.getCurrentPosition()
-//            Log.d(TAG, index.toString())
-//            if (index != 0) {
-//                val test = rcvBinding.tvNameOfDay.text
-//                Log.d(TAG, test.toString())
-//                binding.rvFutureWeatherForecast.smoothScrollToPosition(index - 1)
-//                val day = binding.rvFutureWeatherForecast.findViewHolderForAdapterPosition(index) // try to access childItem
-//            }
-//        }
 
         bindButtons()
         setupRecycleView()
@@ -77,6 +57,41 @@ class FutureWeatherFragment : Fragment() {
         return binding.root
     }
 
+    private fun bindButtons() {
+        binding.btnNext.setOnClickListener {
+            val index = binding.rvFutureWeatherForecast.currentItem
+            Log.d(TAG, index.toString())
+            binding.rvFutureWeatherForecast.currentItem = index + 1
+        }
+
+        binding.btnBack.setOnClickListener {
+            val index = binding.rvFutureWeatherForecast.currentItem
+            Log.d(TAG, index.toString())
+            if (index != 0) {
+                binding.rvFutureWeatherForecast.currentItem = index - 1
+            }
+        }
+
+        viewModel.backButtonTitle.observe(
+            viewLifecycleOwner,
+            {
+                setBtnTitle(binding.btnBack, it)
+            }
+        )
+
+        viewModel.nextButtonTitle.observe(
+            viewLifecycleOwner,
+            {
+                setBtnTitle(binding.btnNext, it)
+            }
+        )
+    }
+
+    private fun setBtnTitle(btn: Button, title: String?) {
+        btn.text = title
+        btn.isVisible = (title != null)
+    }
+
     private fun bindViewsFuture(response: FutureForecastResponse) {
         val listOfDays: MutableList<Daily> = response.daily.toMutableList()
         // listOfDays.removeAt(0)
@@ -89,13 +104,17 @@ class FutureWeatherFragment : Fragment() {
             adapter = weatherAdapter
             // layoutManager = lm
         }
-//        binding.rvFutureWeatherForecast.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
-//            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-//                return true
-//            }
-//        })
-    }
-
-    private fun bindButtons() {
+        binding.rvFutureWeatherForecast.registerOnPageChangeCallback(object :
+                ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int
+                ) {
+                    Log.d("HELP", "HELP")
+                    super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+                    viewModel.sendViewPagerPosition(position)
+                }
+            })
     }
 }

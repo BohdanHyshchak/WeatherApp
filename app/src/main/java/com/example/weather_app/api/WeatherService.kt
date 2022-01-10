@@ -8,9 +8,19 @@ import retrofit2.http.Query
 
 interface WeatherService {
     @GET("data/2.5/weather")
-    suspend fun getWeatherForecast(
+    suspend fun getWeatherForecastWithCityName(
         @Query("q")
         nameOfCityQuery: String,
+        @Query("units")
+        units: String = "metric",
+    ): Response<WeatherForecastResponse>
+
+    @GET("data/2.5/weather")
+    suspend fun getWeatherForecastWithGeo(
+        @Query("lat")
+        latitude: Double = 50.4333,
+        @Query("lon")
+        longitude: Double = 30.5167,
         @Query("units")
         units: String = "metric",
     ): Response<WeatherForecastResponse>

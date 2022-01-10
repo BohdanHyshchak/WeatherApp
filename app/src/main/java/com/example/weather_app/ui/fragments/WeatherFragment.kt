@@ -1,5 +1,6 @@
 package com.example.weather_app.ui.fragments
 
+import android.Manifest
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
@@ -8,14 +9,11 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -28,22 +26,24 @@ import com.example.weather_app.databinding.WeatherFragmentBinding
 import com.example.weather_app.models.current.WeatherForecastResponse
 import com.example.weather_app.models.future.Daily
 import com.example.weather_app.models.future.FutureForecastResponse
-import com.example.weather_app.ui.viewmodels.WeatherViewModel
-import com.example.weather_app.utils.Resource
+import com.example.weather_app.ui.viewmodels.CurrentWeatherViewModel
+import com.example.weather_app.utils.Constants
+import com.example.weather_app.utils.WeatherUtility
 import com.example.weather_app.utils.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.glide.transformations.BlurTransformation
-import kotlinx.coroutines.launch
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class WeatherFragment : Fragment() {
+class WeatherFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     val TAG = "Weather Fragment"
     private var _binding: WeatherFragmentBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: WeatherViewModel by activityViewModels()
-    lateinit var weatherAdapter: FutureWeatherAdapter
+    private val viewModel: CurrentWeatherViewModel by viewModels()
+    private val weatherAdapter = FutureWeatherAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -67,7 +67,6 @@ class WeatherFragment : Fragment() {
         blurBackground()
         bindButtons()
         initObservers()
-
     }
 
     override fun onStart() {
@@ -77,30 +76,41 @@ class WeatherFragment : Fragment() {
 
     private fun initObservers() {
         viewModel.weatherForecast.observe(
-            viewLifecycleOwner,
-            { response ->
+            viewLifecycleOwner, { response ->
                 bindViews(response)
             }
         )
 
         viewModel.futureWeatherForecast.observe(
-            viewLifecycleOwner,
-            { futureResponse ->
+            viewLifecycleOwner, { futureResponse ->
                 bindViewsFuture(futureResponse)
                 bindCircles(futureResponse)
             }
         )
 
         viewModel.isProgressBarShown.observe(
-            viewLifecycleOwner,
-            {
+            viewLifecycleOwner, {
                 binding.progressBar.isVisible = it
+            }
+        )
+
+        viewModel.isGeoOn.observe(
+            viewLifecycleOwner, {
+                binding.btnTestGeo.text = it.toString()
+                if (it) {
+                    requestPermissions()
+                }
+            }
+        )
+
+        viewModel._latLng.observe(
+            viewLifecycleOwner, {
+                Log.d(TAG, "${it.latitude}, ${it.longitude}")
             }
         )
     }
 
     private fun setupRecyclerView() {
-        weatherAdapter = FutureWeatherAdapter()
         binding.rvFutureWeatherSmall.apply {
             adapter = weatherAdapter
             // layoutManager = lm
@@ -114,7 +124,7 @@ class WeatherFragment : Fragment() {
                     resource: Drawable,
                     transition: Transition<in Drawable?>?
                 ) {
-                    binding.relativeLayout.setBackground(resource)
+                    binding.relativeLayout.background = resource
                 }
             })
     }
@@ -157,6 +167,10 @@ class WeatherFragment : Fragment() {
     }
 
     private fun bindButtons() {
+
+        binding.btnTestGeo.setOnClickListener {
+            viewModel.isGeoOn.postValue(!viewModel.isGeoOn.value!!)
+        }
         binding.btnSearch.setOnClickListener {
             binding.gCity.isVisible = false
             binding.gSearch.isVisible = true
@@ -185,7 +199,7 @@ class WeatherFragment : Fragment() {
         }
 
         binding.btnDetailForecast.setOnClickListener {
-            findNavController().navigate(R.id.action_weatherFragment_to_futureWeatherFragment)
+            findNavController().navigate(R.id.futureWeatherFragment)
         }
     }
 
@@ -193,11 +207,13 @@ class WeatherFragment : Fragment() {
         binding.tvNameOfCity.text = response.name
         binding.tvCountryCode.text = response.sys.country
         binding.tvTemperature.text = "${response.main.temp.roundToInt()}°С"
-        binding.tvTemperatureFeelsLike.text = "Feels like ${response.main.feels_like.roundToInt()}°С"
+        binding.tvTemperatureFeelsLike.text =
+            "Feels like ${response.main.feels_like.roundToInt()}°С"
         binding.tvStateOfSky.text = response.weather[0].description
         binding.etSearch.text.toString()
         Log.d(TAG, "http://openweathermap.org/img/w/${response.weather[0].icon}.png")
-        Glide.with(this).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png").into(binding.ivTestImage)
+        Glide.with(this).load("http://openweathermap.org/img/w/${response.weather[0].icon}.png")
+            .into(binding.ivTestImage)
     }
 
     private fun bindCircles(futureForecastResponse: FutureForecastResponse) {
@@ -214,7 +230,25 @@ class WeatherFragment : Fragment() {
     }
 
     private fun getWindDirection(windDeg: Int): String {
-        val listOfDirections = listOf("N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW", "N")
+        val listOfDirections = listOf(
+            "N",
+            "NNE",
+            "NE",
+            "ENE",
+            "E",
+            "ESE",
+            "SE",
+            "SSE",
+            "S",
+            "SSW",
+            "SW",
+            "WSW",
+            "W",
+            "WNW",
+            "NW",
+            "NNW",
+            "N"
+        )
         val number = (windDeg / 22.5).roundToInt() + 1
         return listOfDirections[number - 1]
     }
@@ -225,12 +259,50 @@ class WeatherFragment : Fragment() {
         weatherAdapter.submitList(listOfDays.toList())
     }
 
-    private fun hideProgressBar() {
-        binding.progressBar.visibility = View.INVISIBLE
+    private fun requestPermissions() {
+        if (WeatherUtility.hasLocationPermissions(requireContext())) {
+            viewModel.getGeoResponse()
+            return
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions if you want to use geolocation.",
+                Constants.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "You need to accept location permissions if you want to use geolocation.",
+                Constants.REQUEST_CODE_LOCATION_PERMISSION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            )
+        }
     }
 
-    private fun showProgressBar() {
-        binding.progressBar.visibility = View.VISIBLE
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        viewModel.getGeoResponse()
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+//            AppSettingsDialog.Builder(this).build().show()
+        } else {
+            requestPermissions()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
     override fun onDestroyView() {
