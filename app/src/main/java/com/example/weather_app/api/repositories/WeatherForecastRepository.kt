@@ -84,6 +84,16 @@ class WeatherForecastRepository @Inject constructor(
             }
         }
 
+    fun getWeatherForecastFromDB(): Flow<Resource<WeatherForecastResponse>> =
+        flow<Resource<WeatherForecastResponse>> {
+            emit(Resource.Loading())
+            val data = weatherDao.getCurrentWeatherForecast()
+            if (data != null)
+                emit(Resource.Success(data))
+            else
+                emit(Resource.Error("Nothing found on DB"))
+        }
+
     fun getFutureWeatherForecastFromDB(): Flow<Resource<FutureForecastResponse>> =
         flow<Resource<FutureForecastResponse>> {
             emit(Resource.Loading())
@@ -93,6 +103,7 @@ class WeatherForecastRepository @Inject constructor(
             else
                 emit(Resource.Error("Nothing found on DB"))
         }
+
 
     fun getLongLat(): Flow<Resource<LatLng>> =
         flow<Resource<LatLng>> {
