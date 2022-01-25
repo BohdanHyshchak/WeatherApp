@@ -8,6 +8,7 @@ import com.example.weather_app.models.current.WEATHER_FORECAST_ID
 import com.example.weather_app.models.current.WeatherForecastResponse
 import com.example.weather_app.models.future.FUTURE_WEATHER_FORECAST_ID
 import com.example.weather_app.models.future.FutureForecastResponse
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WeatherForecastDao {
@@ -16,11 +17,11 @@ interface WeatherForecastDao {
     suspend fun insertCurrent(weatherForecast: WeatherForecastResponse)
 
     @Query("select * from weather_forecast where idOfResponse = $WEATHER_FORECAST_ID")
-    suspend fun getCurrentWeatherForecast(): WeatherForecastResponse?
+    fun getCurrentWeatherForecast(): Flow<WeatherForecastResponse>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFuture(futureForecastResponse: FutureForecastResponse)
 
     @Query("select * from future_weather_forecast where idOfFutureResponse = $FUTURE_WEATHER_FORECAST_ID")
-    suspend fun getFutureWeatherForecast(): FutureForecastResponse?
+    fun getFutureWeatherForecast(): Flow<FutureForecastResponse>
 }

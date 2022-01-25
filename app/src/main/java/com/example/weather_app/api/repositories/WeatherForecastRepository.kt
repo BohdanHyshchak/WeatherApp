@@ -8,6 +8,7 @@ import com.example.weather_app.models.future.FutureForecastResponse
 import com.example.weather_app.utils.Resource
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,13 +34,13 @@ class WeatherForecastRepository @Inject constructor(
                     emit(Resource.Error(weatherForecastResponse.message()))
                 }
             } else {
-                val data = weatherDao.getCurrentWeatherForecast()
-                if (data != null)
-                    emit(Resource.Success(data))
-                else
-                    emit(Resource.Error("Nothing found on DB"))
+                emit(Resource.Success(weatherDao.getCurrentWeatherForecast().first()))
+                Log.d("TAG", weatherDao.getCurrentWeatherForecast().first().name)
             }
         }
+
+    suspend fun saveCurrentWeatherForecast(response: WeatherForecastResponse) =
+        weatherDao.insertCurrent(response)
 
     fun getWeatherForecastWithGeo(
         lat: Double,
@@ -51,16 +52,12 @@ class WeatherForecastRepository @Inject constructor(
                 val weatherForecastResponse = weatherService.getWeatherForecastWithGeo(lat, lon)
                 if (weatherForecastResponse.isSuccessful) {
                     emit(Resource.Success(weatherForecastResponse.body()!!))
-                    weatherDao.insertCurrent(weatherForecastResponse.body()!!)
+                    saveCurrentWeatherForecast(weatherForecastResponse.body()!!)
                 } else {
                     emit(Resource.Error(weatherForecastResponse.message()))
                 }
             } else {
-                val data = weatherDao.getCurrentWeatherForecast()
-                if (data != null)
-                    emit(Resource.Success(data))
-                else
-                    emit(Resource.Error("Nothing found on DB"))
+                emit(Resource.Success(weatherDao.getCurrentWeatherForecast().first()))
             }
         }
 
@@ -76,34 +73,17 @@ class WeatherForecastRepository @Inject constructor(
                     emit(Resource.Error(weatherForecastResponse.message()))
                 }
             } else {
-                val data = weatherDao.getFutureWeatherForecast()
-                if (data != null)
-                    emit(Resource.Success(data))
-                else
-                    emit(Resource.Error("Nothing found on DB"))
+                emit(Resource.Success(weatherDao.getFutureWeatherForecast().first()))
             }
         }
 
-    fun getWeatherForecastFromDB(): Flow<Resource<WeatherForecastResponse>> =
-        flow<Resource<WeatherForecastResponse>> {
-            emit(Resource.Loading())
-            val data = weatherDao.getCurrentWeatherForecast()
-            if (data != null)
-                emit(Resource.Success(data))
-            else
-                emit(Resource.Error("Nothing found on DB"))
-        }
+    fun getWeatherForecastFromDB(): Flow<WeatherForecastResponse> {
+        return weatherDao.getCurrentWeatherForecast()
+    }
 
-    fun getFutureWeatherForecastFromDB(): Flow<Resource<FutureForecastResponse>> =
-        flow<Resource<FutureForecastResponse>> {
-            emit(Resource.Loading())
-            val data = weatherDao.getFutureWeatherForecast()
-            if (data != null)
-                emit(Resource.Success(data))
-            else
-                emit(Resource.Error("Nothing found on DB"))
-        }
-
+    fun getFutureWeatherForecastFromDB(): Flow<FutureForecastResponse> {
+        return weatherDao.getFutureWeatherForecast()
+    }
 
     fun getLongLat(): Flow<Resource<LatLng>> =
         flow<Resource<LatLng>> {

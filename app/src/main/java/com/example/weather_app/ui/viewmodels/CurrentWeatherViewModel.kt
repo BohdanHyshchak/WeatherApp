@@ -59,6 +59,7 @@ class CurrentWeatherViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     _isProgressBarShown.postValue(false)
+                    weatherForecastRepository.saveCurrentWeatherForecast(it.data!!)
                     it.data!!
                 }
             }

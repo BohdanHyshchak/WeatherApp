@@ -29,20 +29,8 @@ class FutureWeatherViewModel @Inject constructor(
 
     private val _futureWeatherForecast = weatherForecastRepository.getFutureWeatherForecastFromDB()
     val futureWeatherForecast = _futureWeatherForecast.mapNotNull {
-        when (it) {
-            is Resource.Error -> {
-                _isProgressBarShown.postValue(false)
-                null
-            }
-            is Resource.Loading -> {
-                _isProgressBarShown.postValue(true)
-                null
-            }
-            is Resource.Success -> {
-                saveDatesForButtons(it.data!!)
-                it.data
-            }
-        }
+        saveDatesForButtons(it)
+        it
     }.asLiveData(Dispatchers.IO)
 
     private fun saveDatesForButtons(response: FutureForecastResponse) {
