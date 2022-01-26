@@ -44,52 +44,15 @@ class WeatherWidget : AppWidgetProvider() {
     private var isListShown = false
 
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("TAG", "onReceive")
         super.onReceive(context, intent)
+        if (intent != null) {
+            Log.d("TAG", "onReceive, ${intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, 15035)}")
+        } else {
+            Log.d("TAG", "onReceive, intent null")
+        }
 
         loadData(context, intent)
     }
-
-//    override fun onUpdate(
-//        context: Context,
-//        appWidgetManager: AppWidgetManager,
-//        appWidgetIds: IntArray
-//    ) {
-//        // Update each of the widgets with the remote adapter.
-//        appWidgetIds.forEach { appWidgetId ->
-//
-//            val listOfDays = mutableListOf<String>()
-//            val listOfImages = mutableListOf<String>()
-//            val listOfTemp = mutableListOf<String>()
-//            coroutineScope.launch {
-//                mainRepository.getFutureWeatherForecastFromDB().collectLatest { futureResponse ->
-//                    val currentResponse = mainRepository.getWeatherForecastFromDB()
-//                    for (i in 1..5) {
-//                        listOfDays.add(futureResponse.daily[i].dt.unixTimestampToDateString("EEEE"))
-//                        listOfImages.add(futureResponse.daily[i].weather[0].icon)
-//                        listOfTemp.add("${futureResponse.daily[i].temp.day.roundToInt()}°   ${futureResponse.daily[i].temp.night.roundToInt()}°")
-//                    }
-//                    val intent = Intent(context, WeatherWidgetService::class.java).apply {
-//                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-//                        putExtra("days", listOfDays.toTypedArray())
-//                        putExtra("images", listOfImages.toTypedArray())
-//                        putExtra("temps", listOfTemp.toTypedArray())
-//                        data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
-//                    }
-//
-//                    val views = RemoteViews(context.packageName, R.layout.weather_widget).apply {
-//                        // Set up the RemoteViews object to use a RemoteViews adapter.
-//                        // This adapter connects to a RemoteViewsService through the
-//                        // specified intent.
-//                        // This is how you populate the data.
-//                        setRemoteAdapter(R.id.listViewWidget, intent)
-//                    }
-//                    appWidgetManager.updateAppWidget(appWidgetId, views)
-//                }
-//            }
-//        }
-//        super.onUpdate(context, appWidgetManager, appWidgetIds)
-//    }
 
     private fun loadData(context: Context?, intent: Intent?) {
         coroutineScope.launch {
@@ -138,7 +101,6 @@ class WeatherWidget : AppWidgetProvider() {
             }
         }
         appWidgetManager?.updateAppWidget(appWidgetId, views)
-        appWidgetManager?.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewWidget)
     }
 
     override fun onDisabled(context: Context?) {
@@ -154,7 +116,6 @@ internal fun updateAppWidget(
     currentResponse: WeatherForecastResponse,
     futureResponse: FutureForecastResponse,
 ) {
-    Log.d("TAG", "updateAppWidget")
     val intent = Intent(context, WeatherWidgetService::class.java).apply {
         // Add the widget ID to the intent extras.
         putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -181,7 +142,7 @@ internal fun updateAppWidget(
         intent.putExtra("temps", listOfTemp.toTypedArray())
 
         setRemoteAdapter(R.id.listViewWidget, intent)
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewWidget)
+        // appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewWidget)
     }
 
     val awt: AppWidgetTarget = object :
@@ -200,14 +161,10 @@ internal fun updateAppWidget(
         .into(awt)
 
     views.setOnClickPendingIntent(R.id.weatherWidget, getPendingIntentActivity(context))
-    // Instruct the widget manager to update the widget
-    appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.listViewWidget)
     appWidgetManager.updateAppWidget(appWidgetId, views)
 }
 
 private fun getPendingIntentActivity(context: Context): PendingIntent {
-    // Construct an Intent which is pointing this class.
     val intent = Intent(context, MainActivity::class.java)
-    // And this time we are sending a broadcast with getBroadcast
     return PendingIntent.getActivity(context, 0, intent, 0)
 }

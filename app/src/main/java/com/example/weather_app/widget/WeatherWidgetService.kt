@@ -1,5 +1,6 @@
 package com.example.weather_app.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -7,13 +8,13 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.bumptech.glide.Glide
 import com.example.weather_app.R
+import kotlinx.coroutines.*
 
 class WeatherWidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
         return WeatherWidgetServiceFactory(this.application, intent)
     }
 }
-
 class WeatherWidgetServiceFactory(
     private val context: Context,
     private val intent: Intent,
@@ -38,7 +39,6 @@ class WeatherWidgetServiceFactory(
         days = intent.getStringArrayExtra("days")?.toMutableList() ?: mutableListOf()
         images = intent.getStringArrayExtra("images")?.toMutableList() ?: mutableListOf()
         temperatures = intent.getStringArrayExtra("temps")?.toMutableList() ?: mutableListOf()
-        Log.d("TAG", temperatures[0].toString())
     }
 
     override fun onDestroy() {
@@ -53,7 +53,8 @@ class WeatherWidgetServiceFactory(
     }
 
     override fun getViewAt(position: Int): RemoteViews {
-        Log.d("TAG", temperatures.get(position).toString())
+        Log.d("TAG", "getViewItem")
+        val testIntent = Intent(context, WeatherWidgetService::class.java).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, "KEK")
         return RemoteViews(context.packageName, R.layout.list_view_item).apply {
             setTextViewText(R.id.tvNameOfDayListView, days?.get(position).toString())
             setTextViewText(R.id.tvTemperatureListView, temperatures?.get(position))
@@ -64,6 +65,7 @@ class WeatherWidgetServiceFactory(
                 .submit()
                 .get()
             setImageViewBitmap(R.id.ivIconListView, bitMap)
+            setIntent(R.id.listViewWidget, "KEK", testIntent)
         }
     }
 
