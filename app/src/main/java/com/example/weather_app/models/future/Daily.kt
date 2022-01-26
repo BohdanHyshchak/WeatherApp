@@ -2,6 +2,7 @@ package com.example.weather_app.models.future
 
 import androidx.room.Embedded
 import androidx.room.TypeConverters
+import java.io.Serializable
 
 data class Daily(
     val clouds: Int,
@@ -27,7 +28,7 @@ data class Daily(
     val wind_deg: Int,
     val wind_gust: Double,
     val wind_speed: Double
-) {
+) : Serializable {
     constructor() : this(
         0, 0.0, 0, FeelsLike(0.0, 0.0, 0.0, 0.0), 0,
         0.0, 0, 0, 0.0, 0, 0.0, 0.0, 0, 0,

@@ -1,4 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.Weather_App.AppWidget.Container"
     android:id="@+id/weatherWidget"
     android:layout_width="match_parent"
@@ -32,9 +34,83 @@
 
     <ImageView
         android:id="@+id/ivIconWidget"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_below="@id/tvCityWidget"
         android:layout_toRightOf="@id/tvTemperatureWidget"
         android:src="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/tvCloudsWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTemperatureWidget"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Clouds:"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvCloudsDescriptionWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTemperatureWidget"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_toRightOf="@id/tvPressureWidget"
+        android:text="84 %"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvHumidityWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCloudsWidget"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Humidity:"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvHumidityDescriptionWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvCloudsWidget"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_toRightOf="@id/tvPressureWidget"
+        android:text="74 %"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvPressureWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvHumidityWidget"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Pressure:"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/tvPressureDescriptionWidget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvHumidityWidget"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@id/tvPressureWidget"
+        android:text="74 %"
+        android:textSize="13sp" />
+
+    <ListView
+        android:visibility="invisible"
+        android:id="@+id/listViewWidget"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        tools:itemCount="3"
+        tools:listitem="@layout/list_view_item" />
 </RelativeLayout>
